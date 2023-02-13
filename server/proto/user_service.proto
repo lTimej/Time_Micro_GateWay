@@ -5,13 +5,14 @@ package  pb;
 option go_package = "./proto;pb";
 
 service UserService {
-  rpc UserService(UserRequest) returns (UserResponse){}
+  rpc TestUser(TestRequest) returns (TestResponse){}
+  rpc UserService(TestRequest) returns (TestResponse){}
 }
 
-message UserRequest{
+message TestRequest{
   int32 id = 1;
 }
 
-message UserResponse{
+message TestResponse{
   string msg = 1;
 }

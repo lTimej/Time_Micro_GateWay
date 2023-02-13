@@ -7,9 +7,7 @@ import (
 	pb "liujun/Time_Micro_GateWay/server/proto"
 )
 
-type Test struct{}
-
-func (e *Test) UserService(ctx context.Context, in *pb.UserRequest, out *pb.UserResponse) error {
+func (uh *UserHandler) TestUser(ctx context.Context, in *pb.TestRequest, out *pb.TestResponse) error {
 	fmt.Println("hahah")
 	//给out赋值
 	out.Msg = fmt.Sprintf("%s===%d", "hahaha", in.Id)

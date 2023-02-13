@@ -36,7 +36,8 @@ func NewUserServiceEndpoints() []*api.Endpoint {
 // Client API for UserService service
 
 type UserService interface {
-	UserService(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error)
+	TestUser(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error)
+	UserService(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error)
 }
 
 type userService struct {
@@ -51,9 +52,19 @@ func NewUserService(name string, c client.Client) UserService {
 	}
 }
 
-func (c *userService) UserService(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error) {
+func (c *userService) TestUser(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error) {
+	req := c.c.NewRequest(c.name, "UserService.TestUser", in)
+	out := new(TestResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userService) UserService(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error) {
 	req := c.c.NewRequest(c.name, "UserService.UserService", in)
-	out := new(UserResponse)
+	out := new(TestResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -64,12 +75,14 @@ func (c *userService) UserService(ctx context.Context, in *UserRequest, opts ...
 // Server API for UserService service
 
 type UserServiceHandler interface {
-	UserService(context.Context, *UserRequest, *UserResponse) error
+	TestUser(context.Context, *TestRequest, *TestResponse) error
+	UserService(context.Context, *TestRequest, *TestResponse) error
 }
 
 func RegisterUserServiceHandler(s server.Server, hdlr UserServiceHandler, opts ...server.HandlerOption) error {
 	type userService interface {
-		UserService(ctx context.Context, in *UserRequest, out *UserResponse) error
+		TestUser(ctx context.Context, in *TestRequest, out *TestResponse) error
+		UserService(ctx context.Context, in *TestRequest, out *TestResponse) error
 	}
 	type UserService struct {
 		userService
@@ -82,6 +95,10 @@ type userServiceHandler struct {
 	UserServiceHandler
 }
 
-func (h *userServiceHandler) UserService(ctx context.Context, in *UserRequest, out *UserResponse) error {
+func (h *userServiceHandler) TestUser(ctx context.Context, in *TestRequest, out *TestResponse) error {
+	return h.UserServiceHandler.TestUser(ctx, in, out)
+}
+
+func (h *userServiceHandler) UserService(ctx context.Context, in *TestRequest, out *TestResponse) error {
 	return h.UserServiceHandler.UserService(ctx, in, out)
 }
