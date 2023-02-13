@@ -8,6 +8,10 @@ service UserService {
   rpc UserService(UserRequest) returns (UserResponse){}
 }
 
+service TestUser {
+  rpc TestUser(UserRequest) returns (UserResponse){}
+}
+
 message UserRequest{
   int32 id = 1;
 }

@@ -85,3 +85,62 @@ type userServiceHandler struct {
 func (h *userServiceHandler) UserService(ctx context.Context, in *UserRequest, out *UserResponse) error {
 	return h.UserServiceHandler.UserService(ctx, in, out)
 }
+
+// Api Endpoints for TestUser service
+
+func NewTestUserEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
+// Client API for TestUser service
+
+type TestUserService interface {
+	TestUser(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error)
+}
+
+type testUserService struct {
+	c    client.Client
+	name string
+}
+
+func NewTestUserService(name string, c client.Client) TestUserService {
+	return &testUserService{
+		c:    c,
+		name: name,
+	}
+}
+
+func (c *testUserService) TestUser(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error) {
+	req := c.c.NewRequest(c.name, "TestUser.TestUser", in)
+	out := new(UserResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Server API for TestUser service
+
+type TestUserHandler interface {
+	TestUser(context.Context, *UserRequest, *UserResponse) error
+}
+
+func RegisterTestUserHandler(s server.Server, hdlr TestUserHandler, opts ...server.HandlerOption) error {
+	type testUser interface {
+		TestUser(ctx context.Context, in *UserRequest, out *UserResponse) error
+	}
+	type TestUser struct {
+		testUser
+	}
+	h := &testUserHandler{hdlr}
+	return s.Handle(s.NewHandler(&TestUser{h}, opts...))
+}
+
+type testUserHandler struct {
+	TestUserHandler
+}
+
+func (h *testUserHandler) TestUser(ctx context.Context, in *UserRequest, out *UserResponse) error {
+	return h.TestUserHandler.TestUser(ctx, in, out)
+}
