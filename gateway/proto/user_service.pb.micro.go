@@ -36,7 +36,8 @@ func NewUserServiceEndpoints() []*api.Endpoint {
 // Client API for UserService service
 
 type UserService interface {
-	UserService(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error)
+	UserService(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error)
+	TestUser(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error)
 }
 
 type userService struct {
@@ -51,9 +52,19 @@ func NewUserService(name string, c client.Client) UserService {
 	}
 }
 
-func (c *userService) UserService(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error) {
+func (c *userService) UserService(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error) {
 	req := c.c.NewRequest(c.name, "UserService.UserService", in)
-	out := new(UserResponse)
+	out := new(TestResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userService) TestUser(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error) {
+	req := c.c.NewRequest(c.name, "UserService.TestUser", in)
+	out := new(TestResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -64,12 +75,14 @@ func (c *userService) UserService(ctx context.Context, in *UserRequest, opts ...
 // Server API for UserService service
 
 type UserServiceHandler interface {
-	UserService(context.Context, *UserRequest, *UserResponse) error
+	UserService(context.Context, *TestRequest, *TestResponse) error
+	TestUser(context.Context, *TestRequest, *TestResponse) error
 }
 
 func RegisterUserServiceHandler(s server.Server, hdlr UserServiceHandler, opts ...server.HandlerOption) error {
 	type userService interface {
-		UserService(ctx context.Context, in *UserRequest, out *UserResponse) error
+		UserService(ctx context.Context, in *TestRequest, out *TestResponse) error
+		TestUser(ctx context.Context, in *TestRequest, out *TestResponse) error
 	}
 	type UserService struct {
 		userService
@@ -82,65 +95,10 @@ type userServiceHandler struct {
 	UserServiceHandler
 }
 
-func (h *userServiceHandler) UserService(ctx context.Context, in *UserRequest, out *UserResponse) error {
+func (h *userServiceHandler) UserService(ctx context.Context, in *TestRequest, out *TestResponse) error {
 	return h.UserServiceHandler.UserService(ctx, in, out)
 }
 
-// Api Endpoints for TestUser service
-
-func NewTestUserEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
-}
-
-// Client API for TestUser service
-
-type TestUserService interface {
-	TestUser(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error)
-}
-
-type testUserService struct {
-	c    client.Client
-	name string
-}
-
-func NewTestUserService(name string, c client.Client) TestUserService {
-	return &testUserService{
-		c:    c,
-		name: name,
-	}
-}
-
-func (c *testUserService) TestUser(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error) {
-	req := c.c.NewRequest(c.name, "TestUser.TestUser", in)
-	out := new(UserResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// Server API for TestUser service
-
-type TestUserHandler interface {
-	TestUser(context.Context, *UserRequest, *UserResponse) error
-}
-
-func RegisterTestUserHandler(s server.Server, hdlr TestUserHandler, opts ...server.HandlerOption) error {
-	type testUser interface {
-		TestUser(ctx context.Context, in *UserRequest, out *UserResponse) error
-	}
-	type TestUser struct {
-		testUser
-	}
-	h := &testUserHandler{hdlr}
-	return s.Handle(s.NewHandler(&TestUser{h}, opts...))
-}
-
-type testUserHandler struct {
-	TestUserHandler
-}
-
-func (h *testUserHandler) TestUser(ctx context.Context, in *UserRequest, out *UserResponse) error {
-	return h.TestUserHandler.TestUser(ctx, in, out)
+func (h *userServiceHandler) TestUser(ctx context.Context, in *TestRequest, out *TestResponse) error {
+	return h.UserServiceHandler.TestUser(ctx, in, out)
 }

@@ -12,16 +12,16 @@ import (
 	"go-micro.dev/v4"
 )
 
-func getClient() pb.TestUserService {
+func getClient() pb.UserService {
 	consulRegistry := consul.NewRegistry()
 	srv := micro.NewService(
 		micro.Registry(consulRegistry))
-	return pb.NewTestUserService(common.ServiceName, srv.Client())
+	return pb.NewUserService(common.ServiceName, srv.Client())
 }
 
 func Index(c *gin.Context) {
 	client := getClient()
-	resp, err := client.TestUser(context.TODO(), &pb.UserRequest{Id: 10})
+	resp, err := client.TestUser(context.TODO(), &pb.TestRequest{Id: 10})
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(200, "错误")
