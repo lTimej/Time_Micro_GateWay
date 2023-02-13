@@ -14,6 +14,7 @@ type UserHandler struct {
 }
 
 func (uh *UserHandler) UserRegister(ctx context.Context, in *pb.RegisterRequest, out *pb.RegisterResponse) error {
+	models.DB.AutoMigrate(&models.User{})
 	user := models.User{
 		Username:   in.Username,
 		Password:   in.Password,
@@ -29,7 +30,7 @@ func (uh *UserHandler) UserRegister(ctx context.Context, in *pb.RegisterRequest,
 	if !b {
 		for _, err = range valid.Errors {
 			out.Code = 1
-			out.Info = err.Message
+			out.Info = "数据为空"
 			return nil
 		}
 	}

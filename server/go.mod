@@ -7,8 +7,8 @@ require (
 	github.com/astaxie/beego v1.12.3
 	github.com/sirupsen/logrus v1.7.0
 	go-micro.dev/v4 v4.7.0
-	gorm.io/driver/mysql v1.4.6
-	gorm.io/gorm v1.24.5
+	gorm.io/driver/mysql v1.4.4
+	gorm.io/gorm v1.24.2
 )
 
 require (
@@ -45,6 +45,7 @@ require (
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
+	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/urfave/cli/v2 v2.3.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
