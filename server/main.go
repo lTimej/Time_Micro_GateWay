@@ -17,8 +17,8 @@ import (
 
 func main() {
 	//配置中心
-	addr := common.ConsulConfig.String("consul_addr")
-	port, _ := common.ConsulConfig.Int("consul_port")
+	addr := common.Config.String("consul_addr")
+	port, _ := common.Config.Int("consul_port")
 	//注册到consul
 	consul_registry := consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
@@ -41,9 +41,6 @@ func main() {
 	if err := pb.RegisterUserServiceHandler(srv.Server(), handler.NewUserHandlerService()); err != nil {
 		logger.Fatal(err)
 	}
-	// if err := pb.RegisterUserServiceHandler(srv.Server(), handler.NewUserHandlerService()); err != nil {
-	// 	logger.Fatal(err)
-	// }
 	// 启动服务
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)

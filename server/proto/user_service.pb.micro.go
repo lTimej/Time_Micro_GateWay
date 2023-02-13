@@ -36,8 +36,10 @@ func NewUserServiceEndpoints() []*api.Endpoint {
 // Client API for UserService service
 
 type UserService interface {
+	// 测试
 	TestUser(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error)
-	UserService(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error)
+	// 用户注册
+	UserRegister(ctx context.Context, in *RegisterRequest, opts ...client.CallOption) (*RegisterResponse, error)
 }
 
 type userService struct {
@@ -62,9 +64,9 @@ func (c *userService) TestUser(ctx context.Context, in *TestRequest, opts ...cli
 	return out, nil
 }
 
-func (c *userService) UserService(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error) {
-	req := c.c.NewRequest(c.name, "UserService.UserService", in)
-	out := new(TestResponse)
+func (c *userService) UserRegister(ctx context.Context, in *RegisterRequest, opts ...client.CallOption) (*RegisterResponse, error) {
+	req := c.c.NewRequest(c.name, "UserService.UserRegister", in)
+	out := new(RegisterResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -75,14 +77,16 @@ func (c *userService) UserService(ctx context.Context, in *TestRequest, opts ...
 // Server API for UserService service
 
 type UserServiceHandler interface {
+	// 测试
 	TestUser(context.Context, *TestRequest, *TestResponse) error
-	UserService(context.Context, *TestRequest, *TestResponse) error
+	// 用户注册
+	UserRegister(context.Context, *RegisterRequest, *RegisterResponse) error
 }
 
 func RegisterUserServiceHandler(s server.Server, hdlr UserServiceHandler, opts ...server.HandlerOption) error {
 	type userService interface {
 		TestUser(ctx context.Context, in *TestRequest, out *TestResponse) error
-		UserService(ctx context.Context, in *TestRequest, out *TestResponse) error
+		UserRegister(ctx context.Context, in *RegisterRequest, out *RegisterResponse) error
 	}
 	type UserService struct {
 		userService
@@ -99,6 +103,6 @@ func (h *userServiceHandler) TestUser(ctx context.Context, in *TestRequest, out 
 	return h.UserServiceHandler.TestUser(ctx, in, out)
 }
 
-func (h *userServiceHandler) UserService(ctx context.Context, in *TestRequest, out *TestResponse) error {
-	return h.UserServiceHandler.UserService(ctx, in, out)
+func (h *userServiceHandler) UserRegister(ctx context.Context, in *RegisterRequest, out *RegisterResponse) error {
+	return h.UserServiceHandler.UserRegister(ctx, in, out)
 }

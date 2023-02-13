@@ -5,8 +5,10 @@ package  pb;
 option go_package = "./proto;pb";
 
 service UserService {
+  //测试
   rpc TestUser(TestRequest) returns (TestResponse){}
-  rpc UserService(TestRequest) returns (TestResponse){}
+  //用户注册
+  rpc UserRegister(RegisterRequest) returns (RegisterResponse){}
 }
 
 message TestRequest{
@@ -15,4 +17,17 @@ message TestRequest{
 
 message TestResponse{
   string msg = 1;
+}
+
+message RegisterRequest{
+  string username = 1;
+  string password = 2;
+  string re_password = 3;
+  string phone = 4;
+  string email = 5;
+}
+
+message RegisterResponse{
+  int32 code = 1;
+  string info = 2;
 }
