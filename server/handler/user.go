@@ -29,8 +29,9 @@ func (uh *UserHandler) UserRegister(ctx context.Context, in *pb.RegisterRequest,
 	}
 	if !b {
 		for _, err = range valid.Errors {
+			fmt.Println(err)
 			out.Code = 1
-			out.Info = "数据为空"
+			out.Info = fmt.Sprintf("%v", err)
 			return nil
 		}
 	}
@@ -65,6 +66,19 @@ func (uh *UserHandler) UserRegister(ctx context.Context, in *pb.RegisterRequest,
 	}
 	out.Code = 0
 	out.Info = ""
+	return nil
+}
+
+func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *pb.LoiginResponse) error {
+	var count int64
+	//图片验证码，存入redis吧
+	models.DB.Table("user").Where("username = ? AND password = /", in.Username, in.Password).Count(&count)
+	if count == 0 {
+		out.Code = 1
+		out.Info = "用户名或密码错误"
+		return nil
+	}
+
 	return nil
 }
 

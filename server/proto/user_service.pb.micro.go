@@ -40,6 +40,8 @@ type UserService interface {
 	TestUser(ctx context.Context, in *TestRequest, opts ...client.CallOption) (*TestResponse, error)
 	// 用户注册
 	UserRegister(ctx context.Context, in *RegisterRequest, opts ...client.CallOption) (*RegisterResponse, error)
+	// 用户登录
+	UserLogin(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoiginResponse, error)
 }
 
 type userService struct {
@@ -74,6 +76,16 @@ func (c *userService) UserRegister(ctx context.Context, in *RegisterRequest, opt
 	return out, nil
 }
 
+func (c *userService) UserLogin(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoiginResponse, error) {
+	req := c.c.NewRequest(c.name, "UserService.UserLogin", in)
+	out := new(LoiginResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for UserService service
 
 type UserServiceHandler interface {
@@ -81,12 +93,15 @@ type UserServiceHandler interface {
 	TestUser(context.Context, *TestRequest, *TestResponse) error
 	// 用户注册
 	UserRegister(context.Context, *RegisterRequest, *RegisterResponse) error
+	// 用户登录
+	UserLogin(context.Context, *LoginRequest, *LoiginResponse) error
 }
 
 func RegisterUserServiceHandler(s server.Server, hdlr UserServiceHandler, opts ...server.HandlerOption) error {
 	type userService interface {
 		TestUser(ctx context.Context, in *TestRequest, out *TestResponse) error
 		UserRegister(ctx context.Context, in *RegisterRequest, out *RegisterResponse) error
+		UserLogin(ctx context.Context, in *LoginRequest, out *LoiginResponse) error
 	}
 	type UserService struct {
 		userService
@@ -105,4 +120,8 @@ func (h *userServiceHandler) TestUser(ctx context.Context, in *TestRequest, out 
 
 func (h *userServiceHandler) UserRegister(ctx context.Context, in *RegisterRequest, out *RegisterResponse) error {
 	return h.UserServiceHandler.UserRegister(ctx, in, out)
+}
+
+func (h *userServiceHandler) UserLogin(ctx context.Context, in *LoginRequest, out *LoiginResponse) error {
+	return h.UserServiceHandler.UserLogin(ctx, in, out)
 }
