@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"image/png"
 	pb "liujun/Time_Micro_GateWay/proto"
 	"liujun/Time_Micro_GateWay/utils"
 	"log"
@@ -18,7 +19,7 @@ func UserRegister(c *gin.Context) {
 	var args map[string]interface{}
 	json.Unmarshal(data, &args)
 	fmt.Println(args)
-	client, _ := getClient()
+	client, _ := getClient(c)
 	resp, err := client.UserRegister(context.Background(), &pb.RegisterRequest{
 		Username:   utils.GetString(args["username"]),
 		Password:   utils.GetString(args["password"]),
@@ -38,7 +39,7 @@ func UserRegister(c *gin.Context) {
 }
 
 func GetCaptcha(c *gin.Context) {
-	client, _ := getClient()
+	client, _ := getClient(c)
 	resp, err := client.GetCaptcha(context.Background(), &pb.CaptchaRequest{})
 	if err != nil {
 		log.Println("获取图片验证码错误,err:", err)
@@ -47,14 +48,14 @@ func GetCaptcha(c *gin.Context) {
 	}
 	var img captcha.Image
 	json.Unmarshal(resp.Img, &img)
-	c.JSON(200, img)
+	png.Encode(c.Writer, img)
 }
 
 func Login(c *gin.Context) {
 	data, _ := c.GetRawData()
 	var user_info map[string]string
 	_ = json.Unmarshal(data, &user_info)
-	client, _ := getClient()
+	client, _ := getClient(c)
 	resp, err := client.UserLogin(context.Background(), &pb.LoginRequest{
 		Username: user_info["username"],
 		Password: user_info["password"],
@@ -67,6 +68,5 @@ func Login(c *gin.Context) {
 	}
 	file, _ := os.OpenFile("log.log", os.O_CREATE|os.O_WRONLY, 0666)
 	file.Write([]byte(resp.Tokent))
-	// ioutil.WriteFile("log.log", []byte(resp.Tokent), 0x666)
 	c.JSON(200, resp)
 }
