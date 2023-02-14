@@ -89,7 +89,7 @@ func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *
 		return nil
 	}
 	user := models.User{}
-	models.DB.Table("user").Select("user.username,user.password").Where("username = ?", in.Username).First(&user)
+	models.DB.Table("user").Select("user.id,user.username,user.password").Where("username = ?", in.Username).First(&user)
 	if user.Username == "" {
 		out.Code = 1
 		out.Info = "用户名不存在"
@@ -100,8 +100,16 @@ func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *
 		out.Info = "用户名或者密码错误"
 		return nil
 	}
+	token, err := utils.GenerateToken(int64(user.ID))
+	if err != nil {
+		out.Code = 1
+		out.Info = fmt.Sprintf("%v", err)
+		fmt.Println("===================有问题===========")
+		return nil
+	}
 	out.Code = 0
 	out.Info = "登录成功"
+	out.Tokent = token
 	return nil
 }
 

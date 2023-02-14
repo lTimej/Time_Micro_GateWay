@@ -8,7 +8,6 @@ import (
 )
 
 func (uh *UserHandler) TestUser(ctx context.Context, in *pb.TestRequest, out *pb.TestResponse) error {
-	fmt.Println("hahah")
 	//给out赋值
 	out.Msg = fmt.Sprintf("%s===%d", "hahaha", in.Id)
 	return nil
