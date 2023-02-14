@@ -10,6 +10,8 @@ import (
 	"liujun/Time_Micro_GateWay/server/utils"
 	"time"
 
+	"github.com/go-redis/redis/v8"
+
 	"github.com/afocus/captcha"
 	"github.com/astaxie/beego/validation"
 )
@@ -74,15 +76,32 @@ func (uh *UserHandler) UserRegister(ctx context.Context, in *pb.RegisterRequest,
 }
 
 func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *pb.LoiginResponse) error {
-	var count int64
-	//图片验证码，存入redis吧
-	models.DB.Table("user").Where("username = ? AND password = /", in.Username, in.Password).Count(&count)
-	if count == 0 {
+	//从redis获取图片验证码
+	redis_code, err := models.RED.Get(context.Background(), "img_code").Result()
+	if err == redis.Nil {
 		out.Code = 1
-		out.Info = "用户名或密码错误"
+		out.Info = "验证码已过期"
 		return nil
 	}
-
+	if redis_code != in.Captcha {
+		out.Code = 1
+		out.Info = "验证码错误"
+		return nil
+	}
+	user := models.User{}
+	models.DB.Table("user").Select("user.username,user.password").Where("username = ?", in.Username).First(&user)
+	if user.Username == "" {
+		out.Code = 1
+		out.Info = "用户名不存在"
+		return nil
+	}
+	if utils.GetMd5(in.Password) != user.Password {
+		out.Code = 1
+		out.Info = "用户名或者密码错误"
+		return nil
+	}
+	out.Code = 0
+	out.Info = "登录成功"
 	return nil
 }
 
