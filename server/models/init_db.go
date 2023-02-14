@@ -60,3 +60,12 @@ func init() {
 	}
 	log.Println("redis init success... ...", ping)
 }
+
+func DBMigrate() {
+	if err := DB.AutoMigrate(&User{}, &UserRole{}, &Role{}, &Method{}, &RoleMethod{}, &Service{}); err != nil {
+		log.Println("数据迁移失败err:", err)
+	} else {
+		log.Println("数据迁移成功")
+	}
+
+}

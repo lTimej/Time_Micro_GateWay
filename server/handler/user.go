@@ -20,7 +20,6 @@ type UserHandler struct {
 }
 
 func (uh *UserHandler) UserRegister(ctx context.Context, in *pb.RegisterRequest, out *pb.RegisterResponse) error {
-	models.DB.AutoMigrate(&models.User{})
 	user := models.User{
 		Username:   in.Username,
 		Password:   in.Password,

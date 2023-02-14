@@ -5,6 +5,7 @@ import (
 	"liujun/Time_Micro_GateWay/server/common"
 	"liujun/Time_Micro_GateWay/server/decoration"
 	"liujun/Time_Micro_GateWay/server/handler"
+	"liujun/Time_Micro_GateWay/server/models"
 
 	consul "github.com/asim/go-micro/plugins/registry/consul/v4"
 	"go-micro.dev/v4"
@@ -25,7 +26,7 @@ func main() {
 			fmt.Sprintf("%s:%d", addr, port),
 		}
 	})
-
+	models.DBMigrate()
 	srv := micro.NewService(
 		micro.Name(common.ServiceName),
 		micro.Version(common.Version),
