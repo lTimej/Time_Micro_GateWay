@@ -1,10 +1,12 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"liujun/Time_Micro_GateWay/server/common"
 	"log"
 
+	"github.com/go-redis/redis/v8"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -12,6 +14,7 @@ import (
 
 var (
 	DB  *gorm.DB
+	RED *redis.Client
 	err error
 )
 
@@ -35,4 +38,25 @@ func init() {
 		return
 	}
 	log.Println("mysql init success... ...")
+}
+
+func init() {
+	config := common.Config
+	redis_port, _ := config.Int("redis_port")
+	redis_database, _ := config.Int("redis_database")
+	redis_poolsize, _ := config.Int("redis_poolsize")
+	redis_minidlecon, _ := config.Int("redis_minidlecon")
+	RED = redis.NewClient(&redis.Options{
+		Addr:         fmt.Sprintf("%s:%d", config.String("redis_host"), redis_port),
+		Password:     config.String("redis_password"),
+		DB:           redis_database,
+		PoolSize:     redis_poolsize,
+		MinIdleConns: redis_minidlecon,
+	})
+	ping, err := RED.Ping(context.Background()).Result()
+	if err != nil {
+		log.Println("init redis failed... ...", err)
+		return
+	}
+	log.Println("redis init success... ...", ping)
 }

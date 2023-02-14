@@ -2,11 +2,15 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"image/color"
 	"liujun/Time_Micro_GateWay/server/models"
 	pb "liujun/Time_Micro_GateWay/server/proto"
 	"liujun/Time_Micro_GateWay/server/utils"
+	"time"
 
+	"github.com/afocus/captcha"
 	"github.com/astaxie/beego/validation"
 )
 
@@ -79,6 +83,26 @@ func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *
 		return nil
 	}
 
+	return nil
+}
+
+func (h *UserHandler) GetCaptcha(ctx context.Context, in *pb.CaptchaRequest, out *pb.CaptchaResponse) error {
+	cap := captcha.New()
+	// 可以设置多个字体 或使用cap.AddFont("xx.ttf")追加
+	cap.SetFont("./asset/font/comictype.ttf")
+	// 设置验证码大小
+	cap.SetSize(128, 64)
+	// 设置干扰强度
+	cap.SetDisturbance(captcha.MEDIUM)
+	// 设置前景色 可以多个 随机替换文字颜色 默认黑色
+	cap.SetFrontColor(color.RGBA{0, 0, 0, 0})
+	// 设置背景色 可以多个 随机替换背景色 默认白色
+	cap.SetBkgColor(color.RGBA{255, 255, 255, 255})
+	img, str := cap.Create(4, captcha.NUM)
+	img_bytes, _ := json.Marshal(img)
+	out.Code = str
+	out.Img = img_bytes
+	models.RED.SetEX(context.TODO(), "img_code", str, time.Second*60)
 	return nil
 }
 
