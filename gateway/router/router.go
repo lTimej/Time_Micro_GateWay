@@ -12,5 +12,7 @@ func Router() *gin.Engine {
 	router.GET("/index", handler.Index)
 	//注册
 	router.POST("/register", handler.UserRegister)
+	//获取验证吗
+	router.GET("/getcaptcha", handler.GetCaptcha)
 	return router
 }

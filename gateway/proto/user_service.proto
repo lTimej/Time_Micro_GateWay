@@ -9,6 +9,10 @@ service UserService {
   rpc TestUser(TestRequest) returns (TestResponse){}
   //用户注册
   rpc UserRegister(RegisterRequest) returns (RegisterResponse){}
+  //用户登录
+  rpc UserLogin(LoginRequest) returns (LoiginResponse){}
+  //验证码
+  rpc GetCaptcha(CaptchaRequest) returns (CaptchaResponse){}
 }
 
 message TestRequest{
@@ -30,4 +34,24 @@ message RegisterRequest{
 message RegisterResponse{
   int32 code = 1;
   string info = 2;
+}
+
+message LoginRequest{
+  string username = 1;
+  string password = 2;
+  string captcha = 3;
+}
+
+message LoiginResponse{
+  int32 code = 1;
+  string info = 2;
+}
+
+message CaptchaRequest{
+  
+}
+
+message CaptchaResponse{
+  bytes img = 1;
+  string code = 2;
 }

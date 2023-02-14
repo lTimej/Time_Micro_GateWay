@@ -8,6 +8,7 @@ import (
 	"liujun/Time_Micro_GateWay/utils"
 	"log"
 
+	"github.com/afocus/captcha"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,4 +34,17 @@ func UserRegister(c *gin.Context) {
 	res["code"] = resp.Code
 	res["info"] = resp.Info
 	c.JSON(200, res)
+}
+
+func GetCaptcha(c *gin.Context) {
+	client := getClient()
+	resp, err := client.GetCaptcha(context.Background(), &pb.CaptchaRequest{})
+	if err != nil {
+		log.Println("获取图片验证码错误,err:", err)
+		c.JSON(200, gin.H{"code": 1, "info": "获取图片验证码错误"})
+		return
+	}
+	var img captcha.Image
+	json.Unmarshal(resp.Img, &img)
+	c.JSON(200, img)
 }
