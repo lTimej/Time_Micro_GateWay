@@ -104,9 +104,9 @@ func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *
 	if err != nil {
 		out.Code = 1
 		out.Info = fmt.Sprintf("%v", err)
-		fmt.Println("===================有问题===========")
 		return nil
 	}
+	fmt.Println("len(token)", len(token))
 	out.Code = 0
 	out.Info = "登录成功"
 	out.Tokent = token
