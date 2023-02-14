@@ -45,6 +45,7 @@ message LoginRequest{
 message LoiginResponse{
   int32 code = 1;
   string info = 2;
+  string tokent = 3;
 }
 
 message CaptchaRequest{
