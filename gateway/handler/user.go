@@ -48,3 +48,21 @@ func GetCaptcha(c *gin.Context) {
 	json.Unmarshal(resp.Img, &img)
 	c.JSON(200, img)
 }
+
+func Login(c *gin.Context) {
+	data, _ := c.GetRawData()
+	var user_info map[string]string
+	_ = json.Unmarshal(data, &user_info)
+	client := getClient()
+	resp, err := client.UserLogin(context.Background(), &pb.LoginRequest{
+		Username: user_info["username"],
+		Password: user_info["password"],
+		Captcha:  user_info["captcha"],
+	})
+	if err != nil {
+		log.Println("登录失败,err:", err)
+		c.JSON(200, gin.H{"code": 1, "info": fmt.Sprintf("%v", err)})
+		return
+	}
+	c.JSON(200, resp)
+}
