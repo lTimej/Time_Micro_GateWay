@@ -27,6 +27,7 @@ func main() {
 		}
 	})
 	models.DBMigrate()
+	models.DBInit()
 	srv := micro.NewService(
 		micro.Name(common.ServiceName),
 		micro.Version(common.Version),

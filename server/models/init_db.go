@@ -3,13 +3,13 @@ package models
 import (
 	"context"
 	"fmt"
-	"liujun/Time_Micro_GateWay/server/common"
-	"log"
-
 	"github.com/go-redis/redis/v8"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"liujun/Time_Micro_GateWay/server/common"
+	"log"
 )
 
 var (
@@ -67,5 +67,54 @@ func DBMigrate() {
 	} else {
 		log.Println("数据迁移成功")
 	}
-
+}
+func DBInit() {
+	viper.SetConfigName("privileges") // name of config file (without extension)
+	viper.SetConfigType("yml")        // REQUIRED if the config file does not have the extension in the name
+	viper.AddConfigPath("conf")       // path to look for the config file in 	// optionally look for config in the working directory
+	err := viper.ReadInConfig()       // Find and read the config file
+	if err != nil {                   // Handle errors reading the config file
+		log.Printf("配置文件错误: %v", err)
+		return
+	}
+	m := viper.AllSettings()
+	tx := DB.Begin()
+	for k, v := range m {
+		p_method := Method{Name: k}
+		if err := tx.Create(&p_method).Error; err != nil {
+			log.Println("插入表method错误,err:", err)
+			tx.Rollback()
+			return
+		}
+		for _, handle := range v.([]interface{}) {
+			for kk, vv := range handle.(map[string]interface{}) {
+				c_method := Method{Name: kk, ParentId: p_method.Id}
+				if err := tx.Create(&c_method).Error; err != nil {
+					log.Println("插入表method错误,err:", err)
+					tx.Rollback()
+					return
+				}
+				for _, vvv := range vv.([]interface{}) {
+					role := Role{}
+					DB.Where("name = ?", vvv.(string)).First((&role))
+					if role.Name == "" {
+						role = Role{Name: vvv.(string)}
+						if err := tx.Create(&role).Error; err != nil {
+							log.Println("插入表role错误,err:", err)
+							tx.Rollback()
+							return
+						}
+					}
+					role_method := RoleMethod{MethodId: c_method.Id, RoleId: role.RoleId}
+					if err := tx.Create(&role_method).Error; err != nil {
+						log.Println("插入表role_method错误,err:", err)
+						tx.Rollback()
+						return
+					}
+				}
+			}
+		}
+	}
+	tx.Commit()
+	return
 }
