@@ -7,6 +7,8 @@ require (
 	github.com/asim/go-micro/plugins/registry/consul/v4 v4.7.0
 	github.com/astaxie/beego v1.12.3
 	github.com/gin-gonic/gin v1.8.2
+	github.com/go-redis/redis/v8 v8.11.5
+	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/sirupsen/logrus v1.7.0
 	go-micro.dev/v4 v4.7.0
 )
@@ -17,7 +19,9 @@ require (
 	github.com/acomagu/bufpipe v1.0.3 // indirect
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
