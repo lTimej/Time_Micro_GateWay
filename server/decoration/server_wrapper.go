@@ -14,7 +14,7 @@ import (
 func ServerWrapper() server.HandlerWrapper {
 	return func(h server.HandlerFunc) server.HandlerFunc {
 		return func(ctx context.Context, req server.Request, rsp interface{}) error {
-			if req.Endpoint() == "UserService.GetCaptcha" || req.Endpoint() == "UserService.UserLogin" {
+			if req.Endpoint() == "UserService.GetCaptcha" || req.Endpoint() == "UserService.UserLogin" || req.Endpoint() == "UserService.UserRegister" {
 				return h(ctx, req, rsp)
 			}
 			header := req.Header()

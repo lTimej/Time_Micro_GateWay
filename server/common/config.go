@@ -10,6 +10,10 @@ var (
 	err    error
 )
 
+const (
+	DefaultUserRoleId = 1
+)
+
 func init() {
 	Config, err = config.NewConfig("ini", "./conf/conf.config")
 	if err != nil {

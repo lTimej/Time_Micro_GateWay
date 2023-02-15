@@ -2,8 +2,9 @@ package utils
 
 import (
 	"errors"
-	"github.com/golang-jwt/jwt/v4"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 const TokenExpire = time.Hour * 2
@@ -12,12 +13,14 @@ var CustomSecret = []byte("micr0_gatevvay")
 
 type CustomClaims struct {
 	UserId int64 `json:"user_id"`
+	RoleId int64 `json:"role_id"`
 	jwt.RegisteredClaims
 }
 
-func GenerateToken(user_id int64) (string, error) {
+func GenerateToken(user_id int64, role_id int64) (string, error) {
 	claims := CustomClaims{
 		user_id,
+		role_id,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExpire)),
 			Issuer:    "micro-gateway",

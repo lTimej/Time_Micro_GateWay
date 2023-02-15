@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"image/color"
+	"liujun/Time_Micro_GateWay/server/common"
 	"liujun/Time_Micro_GateWay/server/models"
 	pb "liujun/Time_Micro_GateWay/server/proto"
 	"liujun/Time_Micro_GateWay/server/utils"
+	"log"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -65,13 +67,33 @@ func (uh *UserHandler) UserRegister(ctx context.Context, in *pb.RegisterRequest,
 		return nil
 	}
 	user.Password = utils.GetMd5(user.Password)
-	fmt.Println(user.Password)
-	if err := models.DB.Create(&user).Error; err != nil {
-		return err
+	tx := models.DB.Begin()
+	if err := tx.Create(&user).Error; err != nil {
+		tx.Rollback()
+		log.Println(err)
+		out.Code = 1
+		out.Info = "数据库错误"
+		return nil
 	}
+	user_role := models.UserRole{RoleId: common.DefaultUserRoleId, UserId: user.ID}
+	if err := tx.Create(&user_role).Error; err != nil {
+		tx.Rollback()
+		log.Println(err)
+		out.Code = 1
+		out.Info = "数据库错误"
+		return nil
+	}
+	tx.Commit()
 	out.Code = 0
 	out.Info = ""
 	return nil
+}
+
+type Result struct {
+	Id       int    `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	RoleId   int    `json:"role_id"`
 }
 
 func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *pb.LoiginResponse) error {
@@ -87,8 +109,10 @@ func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *
 		out.Info = "验证码错误"
 		return nil
 	}
-	user := models.User{}
-	models.DB.Table("user").Select("user.id,user.username,user.password").Where("username = ?", in.Username).First(&user)
+	var user Result
+	models.DB.Table("user").Select("user.id,user.username,user.password,user_role.role_id").
+		Joins("left join user_role on user.id = user_role.user_id").
+		Where("username = ?", in.Username).Scan(&user)
 	if user.Username == "" {
 		out.Code = 1
 		out.Info = "用户名不存在"
@@ -99,7 +123,7 @@ func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *
 		out.Info = "用户名或者密码错误"
 		return nil
 	}
-	token, err := utils.GenerateToken(int64(user.ID))
+	token, err := utils.GenerateToken(int64(user.Id), int64(user.RoleId))
 	if err != nil {
 		out.Code = 1
 		out.Info = fmt.Sprintf("%v", err)
