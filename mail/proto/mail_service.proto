@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "./proto;pb";
+
+service MailService{
+  rpc TestMail(MailTestRequest) returns (MailTestResponse){}
+}
+
+message MailTestRequest{
+  int32 id = 1;
+}
+
+message MailTestResponse{
+  string msg = 1;
+}
