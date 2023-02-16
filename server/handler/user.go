@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image/color"
 	"liujun/Time_Micro_GateWay/server/common"
+	mq "liujun/Time_Micro_GateWay/server/lib/rabbitmq"
 	"liujun/Time_Micro_GateWay/server/models"
 	pb "liujun/Time_Micro_GateWay/server/proto"
 	"liujun/Time_Micro_GateWay/server/utils"
@@ -84,6 +85,14 @@ func (uh *UserHandler) UserRegister(ctx context.Context, in *pb.RegisterRequest,
 		return nil
 	}
 	tx.Commit()
+	data, _ := json.Marshal(user)
+	err = mq.Push(string(data))
+	if err != nil {
+		log.Println("发送消息失败err:", err)
+		out.Code = 1
+		out.Info = fmt.Sprintf("%v", err)
+		return nil
+	}
 	out.Code = 0
 	out.Info = ""
 	return nil
