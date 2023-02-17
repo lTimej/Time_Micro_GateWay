@@ -61,6 +61,9 @@ func Login(c *gin.Context) {
 		Password: user_info["password"],
 		Captcha:  user_info["captcha"],
 	})
+	if resp.Code == 2 {
+		fmt.Println(resp.Info)
+	}
 	if err != nil {
 		log.Println("登录失败,err:", err)
 		c.JSON(200, gin.H{"code": 1, "info": fmt.Sprintf("%v", err)})

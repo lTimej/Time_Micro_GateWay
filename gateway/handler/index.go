@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"liujun/Time_Micro_GateWay/common"
+	"liujun/Time_Micro_GateWay/decoration"
 	pb "liujun/Time_Micro_GateWay/proto"
 	"liujun/Time_Micro_GateWay/utils"
 	"liujun/Time_Micro_GateWay/vendors/rbac"
@@ -19,7 +20,8 @@ import (
 func getClient(c *gin.Context) (pb.UserService, context.Context) {
 	consulRegistry := consul.NewRegistry()
 	srv := micro.NewService(
-		micro.Registry(consulRegistry))
+		micro.Registry(consulRegistry),
+		micro.WrapClient(decoration.NewClientWrapper))
 	token := c.Request.Header.Get("Authorization")
 	ctx := metadata.Set(context.Background(), "Authorization", token)
 	return pb.NewUserService(common.ServiceName, srv.Client()), ctx

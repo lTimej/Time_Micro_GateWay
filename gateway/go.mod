@@ -3,6 +3,7 @@ module liujun/Time_Micro_GateWay
 go 1.19
 
 require (
+	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
 	github.com/asim/go-micro/plugins/registry/consul/v4 v4.7.0
 	github.com/astaxie/beego v1.12.3
@@ -59,6 +60,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
+	github.com/smartystreets/goconvey v1.7.2 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/urfave/cli/v2 v2.3.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
