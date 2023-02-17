@@ -33,6 +33,7 @@ func (uh *UserHandler) UserRegister(ctx context.Context, in *pb.RegisterRequest,
 	valid := validation.Validation{}
 	b, err := valid.Valid(&user)
 	if err != nil {
+		fmt.Println(1111, err)
 		return err
 	}
 	if !b {

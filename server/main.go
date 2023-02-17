@@ -38,10 +38,12 @@ func main() {
 
 	//注册handler,将Test实例注册到服务，供客户端回调时调用
 	if err := pb.RegisterUserServiceHandler(srv.Server(), handler.NewUserHandlerService()); err != nil {
+		fmt.Println(11111)
 		logger.Fatal(err)
 	}
 	// 启动服务
 	if err := srv.Run(); err != nil {
+		fmt.Println(2222)
 		logger.Fatal(err)
 	}
 }
