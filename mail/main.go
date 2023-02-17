@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"liujun/Time_Micro_GateWay/mail/common"
+	"liujun/Time_Micro_GateWay/mail/handler"
+	mq "liujun/Time_Micro_GateWay/mail/lib/rabbitmq"
+	pb "liujun/Time_Micro_GateWay/mail/proto"
+	"time"
+
 	"github.com/asim/go-micro/plugins/registry/consul/v4"
 	"go-micro.dev/v4"
 	"go-micro.dev/v4/logger"
 	"go-micro.dev/v4/registry"
-	"liujun/Time_Micro_GateWay/mail/common"
-	"liujun/Time_Micro_GateWay/mail/handler"
-	pb "liujun/Time_Micro_GateWay/mail/proto"
-	"time"
 )
 
 func main() {
@@ -31,6 +33,7 @@ func main() {
 	if err := pb.RegisterMailServiceHandler(srv.Server(), handler.NewMailHandlerService()); err != nil {
 		logger.Fatal(err)
 	}
+	mq.SendMail()
 	// 启动服务
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)
