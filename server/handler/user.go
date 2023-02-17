@@ -13,8 +13,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/go-redis/redis/v8"
-
 	"github.com/afocus/captcha"
 	"github.com/astaxie/beego/validation"
 )
@@ -108,18 +106,19 @@ type Result struct {
 
 func (uh *UserHandler) UserLogin(ctx context.Context, in *pb.LoginRequest, out *pb.LoiginResponse) error {
 	//从redis获取图片验证码
-	redis_code, err := models.RED.Get(context.Background(), "img_code").Result()
-	if err == redis.Nil {
-		out.Code = 1
-		out.Info = "验证码已过期"
-		return nil
-	}
-	if redis_code != in.Captcha {
-		out.Code = 1
-		out.Info = "验证码错误"
-		return nil
-	}
+	// redis_code, err := models.RED.Get(context.Background(), "img_code").Result()
+	// if err == redis.Nil {
+	// 	out.Code = 1
+	// 	out.Info = "验证码已过期"
+	// 	return nil
+	// }
+	// if redis_code != in.Captcha {
+	// 	out.Code = 1
+	// 	out.Info = "验证码错误"
+	// 	return nil
+	// }
 	var user Result
+
 	models.DB.Table("user").Select("user.id,user.username,user.password,user_role.role_id").
 		Joins("left join user_role on user.id = user_role.user_id").
 		Where("username = ?", in.Username).Scan(&user)
