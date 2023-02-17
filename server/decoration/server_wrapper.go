@@ -3,11 +3,11 @@ package decoration
 import (
 	"context"
 	"errors"
+	opentracing "github.com/asim/go-micro/plugins/wrapper/trace/opentracing/v4"
+	"go-micro.dev/v4/server"
+	"liujun/Time_Micro_GateWay/server/common"
 	"liujun/Time_Micro_GateWay/server/utils"
 	"log"
-
-	"go-micro.dev/v4/server"
-	// "google.golang.org/grpc/metadata"
 )
 
 // 服务端装饰器
@@ -35,4 +35,11 @@ func ServerWrapper() server.HandlerWrapper {
 			return h(ctx, req, rsp)
 		}
 	}
+}
+
+// 分布式链路追踪
+func ServerTrace(service *common.MicroService) server.HandlerWrapper {
+	tracer := utils.GetTracer(common.ServiceName, service.Addr, common.Config)
+	tracerHandler := opentracing.NewHandlerWrapper(tracer)
+	return tracerHandler
 }
