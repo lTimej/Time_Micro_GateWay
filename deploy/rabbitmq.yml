@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  rabbitmq:
+    image: daocloud.io/library/rabbitmq:3.8.7
+    container_name: rabbitmq
+    restart: always
+    volumes:
+      - ./data/:/var/lib/rabbitmq/
+    ports:
+      - 5672:5672
+      - 15672:15672

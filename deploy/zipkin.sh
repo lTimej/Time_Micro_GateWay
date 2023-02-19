@@ -1,0 +1,1 @@
+docker run --restart always --name ezipkin -d -p 9411:9411 openzipkin/zipkin
